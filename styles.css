@@ -460,8 +460,8 @@ body {
 }
 
 .snowdrift-illustration {
-    width: 80px;
-    height: 80px;
+    width: 120px;
+    height: 120px;
     flex-shrink: 0;
 }
 
@@ -684,11 +684,13 @@ body {
     position: absolute;
     top: -10px;
     color: white;
-    font-size: 1em;
+    font-size: 2em;
     user-select: none;
     pointer-events: none;
     animation: fall linear infinite;
-    opacity: 0.8;
+    opacity: 1;
+    text-shadow: 0 0 8px rgba(255, 255, 255, 1), 0 0 15px rgba(255, 255, 255, 0.8), 0 0 20px rgba(200, 220, 255, 0.6);
+    filter: drop-shadow(0 0 3px white);
 }
 
 @keyframes fall {

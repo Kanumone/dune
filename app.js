@@ -346,7 +346,7 @@ function triggerHaptic() {
 // Create snowfall animation
 function createSnowfall() {
     const snowContainer = document.getElementById('snowContainer');
-    const snowflakeCount = 50; // Number of snowflakes
+    const snowflakeCount = 80; // Number of snowflakes
 
     for (let i = 0; i < snowflakeCount; i++) {
         const snowflake = document.createElement('div');
@@ -356,8 +356,8 @@ function createSnowfall() {
         // Random position
         snowflake.style.left = Math.random() * 100 + '%';
 
-        // Random size
-        const size = Math.random() * 0.5 + 0.5; // 0.5 to 1
+        // Random size (larger range)
+        const size = Math.random() * 0.8 + 0.7; // 0.7 to 1.5
         snowflake.style.fontSize = size + 'em';
 
         // Random animation duration (slower = more realistic)
