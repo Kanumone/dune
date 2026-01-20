@@ -133,10 +133,13 @@ function init() {
     createPlacemarks();
 
     // Initialize UI
-    initHeroPanel();
     initFilters();
     initLegend();
     initPlaceCard();
+
+    // Show filters and legend immediately
+    document.getElementById('filtersPanel').classList.add('visible');
+    document.getElementById('legendPanel').classList.add('visible');
 }
 
 // Create placemarks for all locations
@@ -339,3 +342,35 @@ function triggerHaptic() {
         navigator.vibrate(10);
     }
 }
+
+// Create snowfall animation
+function createSnowfall() {
+    const snowContainer = document.getElementById('snowContainer');
+    const snowflakeCount = 50; // Number of snowflakes
+
+    for (let i = 0; i < snowflakeCount; i++) {
+        const snowflake = document.createElement('div');
+        snowflake.className = 'snowflake';
+        snowflake.innerHTML = '❄';
+
+        // Random position
+        snowflake.style.left = Math.random() * 100 + '%';
+
+        // Random size
+        const size = Math.random() * 0.5 + 0.5; // 0.5 to 1
+        snowflake.style.fontSize = size + 'em';
+
+        // Random animation duration (slower = more realistic)
+        const duration = Math.random() * 10 + 10; // 10 to 20 seconds
+        snowflake.style.animationDuration = duration + 's';
+
+        // Random delay for staggered effect
+        const delay = Math.random() * 5;
+        snowflake.style.animationDelay = delay + 's';
+
+        snowContainer.appendChild(snowflake);
+    }
+}
+
+// Initialize snowfall when page loads
+window.addEventListener('DOMContentLoaded', createSnowfall);
