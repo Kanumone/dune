@@ -3,67 +3,148 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Минские дюны</title>
+    <title>Карта Сугробов</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <!-- Map Container -->
     <div id="map"></div>
 
-    <!-- Bottom Sheet -->
-    <div class="bottom-sheet" id="bottomSheet">
-        <div class="bottom-sheet-handle"></div>
-
-        <div class="bottom-sheet-content">
-            <!-- Header -->
-            <div class="place-header">
-                <h1 class="place-title">Дюна у озера</h1>
-                <div class="place-rating">
-                    <svg class="star-icon" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                    </svg>
-                    <span class="rating-value">4.8</span>
-                </div>
-            </div>
-
-            <!-- Tags -->
-            <div class="tags">
-                <span class="tag">закат</span>
-                <span class="tag">костёр</span>
-                <span class="tag">вид</span>
-            </div>
-
-            <!-- Distance -->
-            <div class="distance">
-                <svg class="distance-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M16 8v8m-8-5v5m5 5H7a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-2"/>
-                </svg>
-                <span>10 мин пешком</span>
-            </div>
-
-            <!-- Action Buttons -->
-            <div class="actions">
-                <button class="btn btn-primary" id="routeBtn">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M9 11l3 3L22 4M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
-                    </svg>
-                    Маршрут
-                </button>
-                <button class="btn btn-secondary" id="shareBtn">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="18" cy="5" r="3"/>
-                        <circle cx="6" cy="12" r="3"/>
-                        <circle cx="18" cy="19" r="3"/>
-                        <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/>
-                        <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
-                    </svg>
-                    Поделиться
-                </button>
-            </div>
-        </div>
+    <!-- Hero Panel -->
+    <div class="hero-panel" id="heroPanel">
+        <h1 class="hero-title">КАРТА СУГРОБОВ</h1>
+        <p class="hero-subtitle">развлекательные локации, которые согревают зиму</p>
+        <button class="cta-button" id="ctaButton">Исследовать карту</button>
     </div>
 
-    <script type="text/javascript" charset="utf-8" async src="https://api-maps.yandex.ru/services/constructor/1.0/js/?um=constructor%3A5c60cd0d2c2eae3cfbc099729054e3a5c7b15e8dfed2074e16ddc275bd2529ea&amp;width=500&amp;height=400&amp;lang=ru_RU&amp;scroll=true"></script>
-    <!-- <script src="app.js"></script> -->
+    <!-- Filters Panel (Left) -->
+    <div class="filters-panel" id="filtersPanel">
+        <button class="filter-chip" data-filter="music">
+            <svg class="filter-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 18V5l12-2v13M9 18c0 1.66-1.34 3-3 3s-3-1.34-3-3 1.34-3 3-3 3 1.34 3 3zm12-2c0 1.66-1.34 3-3 3s-3-1.34-3-3 1.34-3 3-3 3 1.34 3 3z"/>
+            </svg>
+            <span>Где музыка</span>
+        </button>
+        <button class="filter-chip" data-filter="weird">
+            <svg class="filter-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="M8 14s1.5 2 4 2 4-2 4-2"/>
+                <line x1="9" y1="9" x2="9.01" y2="9"/>
+                <line x1="15" y1="9" x2="15.01" y2="9"/>
+            </svg>
+            <span>Где странно и весело</span>
+        </button>
+        <button class="filter-chip" data-filter="party">
+            <svg class="filter-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z"/>
+                <path d="M8 11l2 2 4-4"/>
+            </svg>
+            <span>Где угар</span>
+        </button>
+        <button class="filter-chip" data-filter="cozy">
+            <svg class="filter-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 8h1a4 4 0 0 1 0 8h-1M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/>
+                <line x1="6" y1="1" x2="6" y2="4"/>
+                <line x1="10" y1="1" x2="10" y2="4"/>
+                <line x1="14" y1="1" x2="14" y2="4"/>
+            </svg>
+            <span>Где чай / глинтвейн</span>
+        </button>
+    </div>
+
+    <!-- Legend Panel (Bottom Left) -->
+    <div class="legend-panel" id="legendPanel">
+        <h3 class="legend-title">Как читать карту</h3>
+        <div class="legend-item">
+            <div class="legend-indicator size-indicator">
+                <span class="dot small"></span>
+                <span class="dot medium"></span>
+                <span class="dot large"></span>
+            </div>
+            <p class="legend-text">Размер снежок — популярность</p>
+        </div>
+        <div class="legend-item">
+            <div class="legend-indicator brightness-indicator">
+                <span class="dot dim"></span>
+                <span class="dot bright"></span>
+            </div>
+            <p class="legend-text">Яркость — активность сейчас</p>
+        </div>
+        <button class="add-button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="5" x2="12" y2="19"/>
+                <line x1="5" y1="12" x2="19" y2="12"/>
+            </svg>
+            <span>Добавить сугроб</span>
+        </button>
+    </div>
+
+    <!-- Place Card (Right) -->
+    <div class="place-card" id="placeCard">
+        <button class="close-button" id="closeCard">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="6" x2="6" y2="18"/>
+                <line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+        </button>
+
+        <div class="card-header">
+            <div class="card-header-text">
+                <h2 class="card-title" id="cardTitle">Сугроб №12</h2>
+                <p class="card-district" id="cardDistrict">Китай-город</p>
+            </div>
+            <div class="snowdrift-illustration">
+                <svg viewBox="0 0 80 80" fill="none">
+                    <ellipse cx="40" cy="50" rx="35" ry="20" fill="rgba(244, 216, 168, 0.3)"/>
+                    <ellipse cx="40" cy="45" rx="30" ry="18" fill="rgba(244, 216, 168, 0.5)"/>
+                    <ellipse cx="40" cy="40" rx="25" ry="15" fill="rgba(244, 216, 168, 0.8)"/>
+                </svg>
+            </div>
+        </div>
+
+        <div class="card-size" id="cardSize">220 м²</div>
+
+        <p class="card-description" id="cardDescription">
+            Уютное пространство с живой музыкой и дружелюбной атмосферой. Идеально для вечерних встреч с друзьями.
+        </p>
+
+        <div class="card-badges" id="cardBadges">
+            <span class="badge">Музыка</span>
+            <span class="badge">Движ на 220 м²</span>
+        </div>
+
+        <div class="card-info">
+            <div class="info-item">
+                <svg class="info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <polyline points="12 6 12 12 16 14"/>
+                </svg>
+                <span id="cardTime">Обычно после 23:00</span>
+            </div>
+            <div class="info-item">
+                <svg class="info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                    <line x1="16" y1="2" x2="16" y2="6"/>
+                    <line x1="8" y1="2" x2="8" y2="6"/>
+                    <line x1="3" y1="10" x2="21" y2="10"/>
+                </svg>
+                <span id="cardPeak">Пик — пятница / суббота</span>
+            </div>
+        </div>
+
+        <button class="map-button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                <circle cx="12" cy="10" r="3"/>
+            </svg>
+            <span>Открыть в картах</span>
+        </button>
+    </div>
+
+    <script src="https://api-maps.yandex.ru/2.1/?lang=ru_RU" type="text/javascript"></script>
+    <script src="app.js"></script>
 </body>
 </html>
