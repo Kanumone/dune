@@ -108,128 +108,134 @@ const locations = [
 
 let map;
 let currentLocation = null;
-let placemarksCollection = [];
+let markersCollection = [];
 let activeFilter = null;
 
-// Initialize map when Yandex Maps API is ready
-ymaps.ready(init);
-
-function init() {
-    // Create map
-    map = new ymaps.Map('map', {
-        center: [53.9045, 27.5615],
-        zoom: 13,
-        controls: ['zoomControl']
-    }, {
-        searchControlProvider: 'yandex#search',
-        suppressMapOpenBlock: true,
-        yandexMapDisablePoiInteractivity: true
-    });
-
-    // Disable scroll zoom for better UX
-    map.behaviors.disable('scrollZoom');
-
-    // Create all placemarks
-    createPlacemarks();
-
-    // Initialize UI
+// Initialize map when page loads
+window.onload = async function() {
+    await initMap();
     initFilters();
     initLegend();
     initPlaceCard();
+    createSnowfall();
 
     // Show filters and legend immediately
     document.getElementById('filtersPanel').classList.add('visible');
     document.getElementById('legendPanel').classList.add('visible');
+};
+
+async function initMap() {
+    // Wait for Yandex Maps API to be ready
+    await ymaps3.ready;
+
+    const {YMap, YMapDefaultSchemeLayer, YMapDefaultFeaturesLayer, YMapControls} = ymaps3;
+    const {YMapZoomControl} = await ymaps3.import('@yandex/ymaps3-controls@0.0.1');
+    const {YMapDefaultMarker} = await ymaps3.import('@yandex/ymaps3-markers@0.0.1');
+
+    // Create map
+    map = new YMap(
+        document.getElementById('map'),
+        {
+            location: {
+                center: [27.5615, 53.9045], // Note: v3 uses [lng, lat] instead of [lat, lng]
+                zoom: 13
+            }
+        }
+    );
+
+    // Add scheme layer (map tiles)
+    map.addChild(new YMapDefaultSchemeLayer());
+
+    // Add features layer (for markers)
+    map.addChild(new YMapDefaultFeaturesLayer());
+
+    // Add zoom control
+    const controls = new YMapControls({position: 'right'});
+    controls.addChild(new YMapZoomControl({}));
+    map.addChild(controls);
+
+    // Disable scroll zoom for better UX
+    map.addChild(new ymaps3.YMapListener({
+        layer: 'any',
+        onWheel: (event) => {
+            event.preventDefault();
+        }
+    }));
+
+    // Create all markers
+    createMarkers(YMapDefaultMarker);
 }
 
-// Create placemarks for all locations
-function createPlacemarks() {
+// Create markers for all locations
+function createMarkers(YMapDefaultMarker) {
     locations.forEach(location => {
-        const placemark = new ymaps.Placemark(
-            location.coords,
-            {
-                hintContent: location.title,
-                locationData: location
-            },
-            {
-                iconLayout: 'default#image',
-                iconImageHref: getMarkerIcon(location.popularity),
-                iconImageSize: getMarkerSize(location.popularity),
-                iconImageOffset: getMarkerOffset(location.popularity)
-            }
-        );
+        // Get marker size and color based on popularity
+        const markerConfig = getMarkerConfig(location.popularity);
 
-        // Click handler
-        placemark.events.add('click', function () {
-            showPlaceCard(location);
+        // Create custom HTML content for marker
+        const markerElement = document.createElement('div');
+        markerElement.style.cssText = `
+            width: ${markerConfig.size}px;
+            height: ${markerConfig.size}px;
+            border-radius: 50%;
+            background: #fd7e14;
+            opacity: 0.9;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+            cursor: pointer;
+            position: relative;
+            transition: transform 0.2s;
+        `;
+
+        // Inner white circle for effect
+        const innerCircle = document.createElement('div');
+        innerCircle.style.cssText = `
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: ${markerConfig.size - 12}px;
+            height: ${markerConfig.size - 12}px;
+            border-radius: 50%;
+            background: white;
+            opacity: 0.3;
+        `;
+        markerElement.appendChild(innerCircle);
+
+        // Hover effect
+        markerElement.addEventListener('mouseenter', () => {
+            markerElement.style.transform = 'scale(1.1)';
+        });
+        markerElement.addEventListener('mouseleave', () => {
+            markerElement.style.transform = 'scale(1)';
         });
 
-        placemarksCollection.push({
-            placemark: placemark,
+        // Create marker with custom element
+        const marker = new YMapDefaultMarker({
+            coordinates: [location.coords[1], location.coords[0]], // v3 uses [lng, lat]
+            title: location.title,
+            content: markerElement,
+            onClick: () => {
+                showPlaceCard(location);
+            }
+        });
+
+        markersCollection.push({
+            marker: marker,
             location: location
         });
 
-        map.geoObjects.add(placemark);
+        map.addChild(marker);
     });
 }
 
-// Get marker icon based on popularity
-function getMarkerIcon(popularity) {
-    const sizes = {
-        small: 32,
-        medium: 40,
-        large: 48
+// Get marker configuration based on popularity
+function getMarkerConfig(popularity) {
+    const configs = {
+        small: { size: 32 },
+        medium: { size: 40 },
+        large: { size: 48 }
     };
-    const size = sizes[popularity] || 40;
-
-    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">
-        <defs>
-            <filter id="shadow">
-                <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.3"/>
-            </filter>
-        </defs>
-        <circle cx="${size/2}" cy="${size/2}" r="${size/2 - 2}" fill="#fd7e14" opacity="0.9" filter="url(#shadow)"/>
-        <circle cx="${size/2}" cy="${size/2}" r="${size/2 - 6}" fill="white" opacity="0.3"/>
-    </svg>`;
-
-    return 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svg);
-}
-
-// Get marker size based on popularity
-function getMarkerSize(popularity) {
-    const sizes = {
-        small: [32, 32],
-        medium: [40, 40],
-        large: [48, 48]
-    };
-    return sizes[popularity] || [40, 40];
-}
-
-// Get marker offset based on popularity
-function getMarkerOffset(popularity) {
-    const sizes = {
-        small: [-16, -16],
-        medium: [-20, -20],
-        large: [-24, -24]
-    };
-    return sizes[popularity] || [-20, -20];
-}
-
-// Initialize hero panel
-function initHeroPanel() {
-    const heroPanel = document.getElementById('heroPanel');
-    const ctaButton = document.getElementById('ctaButton');
-
-    ctaButton.addEventListener('click', () => {
-        // Hide hero panel with animation
-        heroPanel.classList.add('hidden');
-
-        // Show filters and legend after hero animation
-        setTimeout(() => {
-            document.getElementById('filtersPanel').classList.add('visible');
-            document.getElementById('legendPanel').classList.add('visible');
-        }, 200);
-    });
+    return configs[popularity] || { size: 40 };
 }
 
 // Initialize filters
@@ -259,19 +265,19 @@ function initFilters() {
 
 // Filter markers by category
 function filterMarkers(category) {
-    placemarksCollection.forEach(({ placemark, location }) => {
+    markersCollection.forEach(({ marker, location }) => {
         if (location.categories.includes(category)) {
-            placemark.options.set('visible', true);
+            marker.update({visible: true});
         } else {
-            placemark.options.set('visible', false);
+            marker.update({visible: false});
         }
     });
 }
 
 // Show all markers
 function showAllMarkers() {
-    placemarksCollection.forEach(({ placemark }) => {
-        placemark.options.set('visible', true);
+    markersCollection.forEach(({ marker }) => {
+        marker.update({visible: true});
     });
 }
 
@@ -324,7 +330,9 @@ function showPlaceCard(location) {
     placeCard.classList.add('visible');
 
     // Center map on selected location
-    map.setCenter(location.coords, 14, {
+    map.setLocation({
+        center: [location.coords[1], location.coords[0]], // v3 uses [lng, lat]
+        zoom: 14,
         duration: 300
     });
 }
@@ -371,6 +379,3 @@ function createSnowfall() {
         snowContainer.appendChild(snowflake);
     }
 }
-
-// Initialize snowfall when page loads
-window.addEventListener('DOMContentLoaded', createSnowfall);
