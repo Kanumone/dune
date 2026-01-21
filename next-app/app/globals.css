@@ -1,0 +1,139 @@
+@import "tailwindcss";
+
+@theme inline {
+  /* Snow/Winter Theme Colors */
+  --color-snow-white: #f8f9fa;
+  --color-snow-light: #e9ecef;
+  --color-snow-medium: #dee2e6;
+  --color-ice-blue: #cfe2ff;
+  --color-winter-text: #212529;
+  --color-text-secondary: #6c757d;
+  --color-text-muted: #adb5bd;
+  --color-accent-warm: #fd7e14;
+  --color-accent-dark: #495057;
+  --color-bg-main: #e8ecf1;
+
+  /* Glass */
+  --color-glass-bg: rgba(248, 249, 250, 0.75);
+  --color-glass-border: rgba(255, 255, 255, 0.3);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Helvetica Neue', sans-serif;
+  background: var(--color-bg-main);
+  color: var(--color-winter-text);
+  overflow: hidden;
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Frosted Glass Utility */
+.frosted-glass {
+  background: var(--color-glass-bg);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid var(--color-glass-border);
+  box-shadow: 0 8px 32px rgba(31, 38, 135, 0.15);
+}
+
+/* Map Styles */
+#map {
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  filter: brightness(1.05) contrast(0.95);
+}
+
+/* Snowflake Animation */
+@keyframes fall {
+  0% {
+    transform: translateY(0vh) rotate(0deg);
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateY(100vh) rotate(360deg);
+    opacity: 0.3;
+  }
+}
+
+.snowflake {
+  position: absolute;
+  top: -10px;
+  color: white;
+  font-size: 2em;
+  user-select: none;
+  pointer-events: none;
+  animation: fall linear infinite;
+  opacity: 1;
+  text-shadow: 0 0 8px rgba(255, 255, 255, 1), 0 0 15px rgba(255, 255, 255, 0.8), 0 0 20px rgba(200, 220, 255, 0.6);
+  filter: drop-shadow(0 0 3px white);
+}
+
+/* Custom Scrollbar */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(173, 181, 189, 0.4);
+  border-radius: 3px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(173, 181, 189, 0.6);
+}
+
+/* Header gradient effect */
+.header-gradient {
+  background: linear-gradient(to bottom,
+    rgba(248, 249, 250, 1) 0%,
+    rgba(248, 249, 250, 0.95) 50%,
+    rgba(248, 249, 250, 0.7) 75%,
+    rgba(248, 249, 250, 0) 100%
+  );
+}
+
+.header-gradient::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image:
+    radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.8) 0%, transparent 3%),
+    radial-gradient(circle at 60% 20%, rgba(255, 255, 255, 0.6) 0%, transparent 4%),
+    radial-gradient(circle at 80% 40%, rgba(255, 255, 255, 0.7) 0%, transparent 2%),
+    radial-gradient(circle at 40% 50%, rgba(255, 255, 255, 0.5) 0%, transparent 3%),
+    radial-gradient(circle at 90% 25%, rgba(255, 255, 255, 0.6) 0%, transparent 2%),
+    radial-gradient(circle at 15% 60%, rgba(255, 255, 255, 0.8) 0%, transparent 3%),
+    radial-gradient(circle at 70% 55%, rgba(255, 255, 255, 0.7) 0%, transparent 2%),
+    radial-gradient(circle at 35% 15%, rgba(255, 255, 255, 0.6) 0%, transparent 3%),
+    radial-gradient(circle at 50% 70%, rgba(255, 255, 255, 0.5) 0%, transparent 4%),
+    radial-gradient(circle at 25% 80%, rgba(255, 255, 255, 0.7) 0%, transparent 2%);
+  background-size: 100% 100%;
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+/* Title font */
+.title-font {
+  font-family: 'Brush Script MT', 'Apple Chancery', 'Segoe Script', 'Comic Sans MS', cursive;
+}
