@@ -62,7 +62,7 @@ export default function FiltersPanel({ activeFilter, onFilterChange }: FiltersPa
           key={filter.id}
           onClick={() => onFilterChange(activeFilter === filter.id ? null : filter.id)}
           className={`
-            flex items-center gap-3 py-3.5 px-5 frosted-glass rounded-full cursor-pointer
+            flex items-center gap-3 py-3 px-4 md:py-3.5 md:px-5 frosted-glass rounded-full cursor-pointer
             transition-all duration-300 ease-out text-[15px] font-medium whitespace-nowrap
             hover:translate-x-1 hover:shadow-lg
             ${activeFilter === filter.id

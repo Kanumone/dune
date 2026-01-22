@@ -1,6 +1,6 @@
 export default function Header() {
   return (
-    <header className="header-gradient fixed top-0 left-0 right-0 z-[950] pt-8 px-8 pb-[120px] pointer-events-none text-center relative">
+    <header className="header-gradient fixed top-0 left-0 right-0 z-[950] pt-6 px-6 pb-20 md:pt-8 md:px-8 md:pb-[120px] pointer-events-none text-center relative">
       <h1 className="title-font text-[42px] font-bold text-winter-text mb-3 pointer-events-auto relative z-10 drop-shadow-sm">
         Карта сугробов
       </h1>
