@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState, useMemo } from 'react';
 import ReactDOM from 'react-dom';
-import { Location, LocationCategory, Popularity } from '@/app/lib/types';
+import { Location, LocationCategory } from '@/app/lib/types';
 
 // Import Yandex Maps types
 type YMaps3 = typeof import('@yandex/ymaps3-types');
@@ -23,11 +23,16 @@ interface YandexMapProps {
 }
 
 const YANDEX_MAPS_API_KEY = '3ddfa66d-9152-44b9-a601-4828b27c8170';
-const MINSK_CENTER: [number, number] = [27.5615, 53.9045];
+const CENTER: [number, number] = [37.619088, 55.751669];
 
-function getMarkerSize(popularity: Popularity): number {
-  const sizes = { small: 32, medium: 40, large: 48 };
-  return sizes[popularity] || 40;
+function getMarkerSize(clicks: number): number {
+  // 32px at 0 clicks, 56px at 1000+ clicks
+  const minSize = 32;
+  const maxSize = 56;
+  const maxClicks = 1000;
+
+  if (clicks >= maxClicks) return maxSize;
+  return minSize + (clicks / maxClicks) * (maxSize - minSize);
 }
 
 function loadYandexMapsScript(): Promise<void> {
@@ -70,44 +75,31 @@ function loadYandexMapsScript(): Promise<void> {
   return window.ymaps3Loading;
 }
 
-function createMarkerElement(location: Location): HTMLElement {
-  const size = getMarkerSize(location.popularity);
+function MarkerIcon({ location }: { location: Location }) {
+  const size = getMarkerSize(location.clicks);
 
-  const markerElement = document.createElement('div');
-  markerElement.style.cssText = `
-    width: ${size}px;
-    height: ${size}px;
-    border-radius: 50%;
-    background: #fd7e14;
-    opacity: 0.9;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-    cursor: pointer;
-    position: relative;
-    transition: transform 0.2s;
-  `;
-
-  const innerCircle = document.createElement('div');
-  innerCircle.style.cssText = `
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: ${size - 12}px;
-    height: ${size - 12}px;
-    border-radius: 50%;
-    background: white;
-    opacity: 0.3;
-  `;
-  markerElement.appendChild(innerCircle);
-
-  markerElement.addEventListener('mouseenter', () => {
-    markerElement.style.transform = 'scale(1.1)';
-  });
-  markerElement.addEventListener('mouseleave', () => {
-    markerElement.style.transform = 'scale(1)';
-  });
-
-  return markerElement;
+  return (
+    <div
+      style={{
+        width: `${size}px`,
+        height: `${size}px`,
+        cursor: 'pointer',
+        position: 'relative',
+        transition: 'transform 0.2s',
+        filter: 'drop-shadow(0 2px 6px rgba(0,0,0,0.3))',
+      }}
+    >
+      <img
+        src="/snow.svg"
+        alt={location.title}
+        style={{
+          width: '100%',
+          height: '100%',
+          objectFit: 'contain',
+        }}
+      />
+    </div>
+  );
 }
 
 interface ReactifiedAPI {
@@ -142,8 +134,8 @@ export default function YandexMap({
       };
     }
     return {
-      center: MINSK_CENTER,
-      zoom: 13,
+      center: CENTER,
+      zoom: 14,
     };
   }, [selectedLocation]);
 
@@ -195,7 +187,6 @@ export default function YandexMap({
           YMapControls,
           YMapMarker,
           YMapZoomControl: uiThemeComponents.YMapZoomControl,
-          YMapDefaultMarker: uiThemeComponents.YMapDefaultMarker,
         });
       } catch (error) {
         console.error('Error initializing Yandex Maps:', error);
@@ -214,7 +205,7 @@ export default function YandexMap({
     return <div id="map" style={{ width: '100%', height: '100%' }} />;
   }
 
-  const { reactify, YMap, YMapDefaultSchemeLayer, YMapDefaultFeaturesLayer, YMapControls, YMapZoomControl, YMapDefaultMarker } =
+  const { reactify, YMap, YMapDefaultSchemeLayer, YMapDefaultFeaturesLayer, YMapControls, YMapZoomControl, YMapMarker } =
     reactifiedAPI;
 
   return (
@@ -222,23 +213,23 @@ export default function YandexMap({
       <YMap location={reactify.useDefault(mapLocation, [mapLocation])}>
         <YMapDefaultSchemeLayer />
         <YMapDefaultFeaturesLayer />
-        
+
 
         <YMapControls position="right">
           <YMapZoomControl />
         </YMapControls>
 
         {filteredLocations.map((location) => (
-          <YMapDefaultMarker
+          <YMapMarker
             key={location.id}
             coordinates={reactify.useDefault(
               [location.coords[1], location.coords[0]] as [number, number],
               [location.id]
             )}
-            title={location.title}
-            content={createMarkerElement(location)}
             onClick={() => onSelectLocation(location)}
-          />
+          >
+            <MarkerIcon location={location} />
+          </YMapMarker>
         ))}
       </YMap>
     </div>
