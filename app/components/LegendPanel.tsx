@@ -23,7 +23,7 @@ export default function LegendPanel({ onLocationAdded }: LegendPanelProps) {
       <button
         onClick={() => setIsFormOpen(true)}
         className="
-          fixed right-[84px] bottom-6 z-[900] w-12 h-12 flex items-center justify-center
+          fixed right-6 top-1/2 -translate-y-[84px] z-[900] w-12 h-12 flex items-center justify-center
           frosted-glass rounded-full cursor-pointer transition-all duration-300 ease-out
           text-winter-text text-2xl font-bold hover:scale-110 hover:shadow-lg
         "
@@ -36,7 +36,7 @@ export default function LegendPanel({ onLocationAdded }: LegendPanelProps) {
       <button
         onClick={() => setIsLegendOpen(!isLegendOpen)}
         className="
-          fixed right-6 bottom-6 z-[900] w-12 h-12 flex items-center justify-center
+          fixed right-6 top-1/2 -translate-y-1/2 z-[900] w-12 h-12 flex items-center justify-center
           frosted-glass rounded-full cursor-pointer transition-all duration-300 ease-out
           text-winter-text text-xl font-bold hover:scale-110 hover:shadow-lg
         "
@@ -48,9 +48,9 @@ export default function LegendPanel({ onLocationAdded }: LegendPanelProps) {
       {/* Legend panel */}
       <div
         className={`
-          fixed right-6 bottom-20 z-[900] p-4 md:p-6 frosted-glass rounded-3xl min-w-[280px]
+          fixed right-20 top-1/2 z-[900] p-4 md:p-6 frosted-glass rounded-3xl min-w-[280px]
           transition-all duration-400 ease-out
-          ${isLegendOpen ? 'opacity-100 translate-y-0 pointer-events-auto' : 'opacity-0 translate-y-4 pointer-events-none'}
+          ${isLegendOpen ? 'opacity-100 -translate-y-1/2 -translate-x-0 pointer-events-auto' : 'opacity-0 -translate-y-1/2 translate-x-4 pointer-events-none'}
         `}
       >
         <h3 className="text-base font-semibold mb-4 text-winter-text">Как читать карту</h3>

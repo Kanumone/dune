@@ -187,6 +187,7 @@ export default function YandexMap({
           YMapControls,
           YMapMarker,
           YMapZoomControl: uiThemeComponents.YMapZoomControl,
+          YMapGeolocationControl: uiThemeComponents.YMapGeolocationControl,
         });
       } catch (error) {
         console.error('Error initializing Yandex Maps:', error);
@@ -205,7 +206,7 @@ export default function YandexMap({
     return <div id="map" style={{ width: '100%', height: '100%' }} />;
   }
 
-  const { reactify, YMap, YMapDefaultSchemeLayer, YMapDefaultFeaturesLayer, YMapControls, YMapZoomControl, YMapMarker } =
+  const { reactify, YMap, YMapDefaultSchemeLayer, YMapDefaultFeaturesLayer, YMapControls, YMapZoomControl, YMapGeolocationControl, YMapMarker } =
     reactifiedAPI;
 
   return (
@@ -217,6 +218,7 @@ export default function YandexMap({
 
         <YMapControls position="left">
           <YMapZoomControl />
+          <YMapGeolocationControl />
         </YMapControls>
 
         {filteredLocations.map((location) => (

@@ -11,7 +11,7 @@ export default function ContactPanel() {
       <button
         onClick={() => setIsContactOpen(!isContactOpen)}
         className="
-          fixed right-[162px] bottom-6 z-[900] w-12 h-12 flex items-center justify-center
+          fixed right-6 top-1/2 translate-y-[36px] z-[900] w-12 h-12 flex items-center justify-center
           frosted-glass rounded-full cursor-pointer transition-all duration-300 ease-out
           text-winter-text text-xl font-bold hover:scale-110 hover:shadow-lg
         "
@@ -23,9 +23,9 @@ export default function ContactPanel() {
       {/* Contact panel */}
       <div
         className={`
-          fixed right-[162px] bottom-20 z-[900] p-4 md:p-6 frosted-glass rounded-3xl min-w-[280px]
+          fixed right-20 top-1/2 z-[900] p-4 md:p-6 frosted-glass rounded-3xl min-w-[280px]
           transition-all duration-400 ease-out
-          ${isContactOpen ? 'opacity-100 translate-y-0 pointer-events-auto' : 'opacity-0 translate-y-4 pointer-events-none'}
+          ${isContactOpen ? 'opacity-100 translate-y-[36px] -translate-x-0 pointer-events-auto' : 'opacity-0 translate-y-[36px] translate-x-4 pointer-events-none'}
         `}
       >
         <h3 className="text-base font-semibold mb-4 text-winter-text">Связаться с разработчиками</h3>
