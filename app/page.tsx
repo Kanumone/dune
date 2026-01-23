@@ -15,23 +15,23 @@ export default function Home() {
   const [selectedLocation, setSelectedLocation] = useState<Location | null>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    async function fetchLocations() {
-      try {
-        const response = await fetch('/api/locations');
-        if (response.ok) {
-          const data = await response.json();
-          setLocations(data);
-          setLoading(false);
-          return;
-        }
-      } catch (error) {
-        console.error('Failed to fetch locations:', error);
+  const fetchLocations = async () => {
+    try {
+      const response = await fetch('/api/locations');
+      if (response.ok) {
+        const data = await response.json();
+        setLocations(data);
+        setLoading(false);
+        return;
       }
-
-      setLoading(false);
+    } catch (error) {
+      console.error('Failed to fetch locations:', error);
     }
 
+    setLoading(false);
+  };
+
+  useEffect(() => {
     fetchLocations();
   }, []);
 
@@ -66,7 +66,7 @@ export default function Home() {
       />
       {/* <SnowAnimation /> */}
       <FiltersPanel activeFilter={activeFilter} onFilterChange={handleFilterChange} />
-      <LegendPanel />
+      <LegendPanel onLocationAdded={fetchLocations} />
       <PlaceCard location={selectedLocation} onClose={handleClosePlaceCard} />
     </>
   );

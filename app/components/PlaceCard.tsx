@@ -45,6 +45,9 @@ export default function PlaceCard({ location, onClose }: PlaceCardProps) {
       <div className="flex justify-between items-start mb-6 gap-4">
         <div className="flex-1">
           <h2 className="text-2xl font-bold leading-tight mb-1 text-winter-text">{location.title}</h2>
+        <p className="text-[15px] leading-relaxed text-text-secondary mb-6">
+          {location.description}
+        </p>
         </div>
         <div className="w-[120px] h-[120px] flex-shrink-0">
           <SnowdriftIllustration />
@@ -55,9 +58,6 @@ export default function PlaceCard({ location, onClose }: PlaceCardProps) {
         {location.size}
       </div>
 
-      <p className="text-[15px] leading-relaxed text-text-secondary mb-6">
-        {location.description}
-      </p>
 
       <div className="flex flex-wrap gap-2 mb-6">
         {location.badges.map((badge, index) => (
