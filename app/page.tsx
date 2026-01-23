@@ -5,6 +5,7 @@ import { Location, LocationCategory } from '@/app/lib/types';
 import Header from '@/app/components/Header';
 import FiltersPanel from '@/app/components/FiltersPanel';
 import LegendPanel from '@/app/components/LegendPanel';
+import ContactPanel from '@/app/components/ContactPanel';
 import PlaceCard from '@/app/components/PlaceCard';
 import SnowAnimation from '@/app/components/SnowAnimation';
 import YandexMap from '@/app/components/YandexMap';
@@ -65,8 +66,9 @@ export default function Home() {
         selectedLocation={selectedLocation}
       />
       {/* <SnowAnimation /> */}
-      <FiltersPanel activeFilter={activeFilter} onFilterChange={handleFilterChange} />
+      {/* <FiltersPanel activeFilter={activeFilter} onFilterChange={handleFilterChange} /> */}
       <LegendPanel onLocationAdded={fetchLocations} />
+      <ContactPanel />
       <PlaceCard location={selectedLocation} onClose={handleClosePlaceCard} />
     </>
   );

@@ -11,7 +11,17 @@ interface PlaceCardProps {
 export default function PlaceCard({ location, onClose }: PlaceCardProps) {
   if (!location) return null;
 
-  const handleOpenMaps = () => {
+  const handleOpenMaps = async () => {
+    // Increment clicks count
+    try {
+      await fetch(`/api/locations/${location.id}/clicks`, {
+        method: 'PUT',
+      });
+    } catch (error) {
+      console.error('Failed to increment clicks:', error);
+      // Continue opening maps even if tracking fails
+    }
+
     const url = `https://yandex.ru/maps/?rtext=~${location.coords[0]},${location.coords[1]}&rtt=pd`;
     window.open(url, '_blank');
   };
@@ -42,17 +52,17 @@ export default function PlaceCard({ location, onClose }: PlaceCardProps) {
         </svg>
       </button>
 
-      <div className="flex justify-between items-start gap-4 mb-3">
+      <div className="flex justify-between items-start gap-3">
         <div className="flex-1">
           <h2 className="text-2xl font-bold leading-tight text-winter-text">{location.title}</h2>
         </div>
-        <div className="w-[100px] h-[100px] flex-shrink-0">
+        <div className="w-[100px] h-[120px] flex-shrink-0">
           <SnowdriftIllustration />
         </div>
       </div>
 
       <div className="text-4xl font-bold leading-none mb-3 text-accent-warm drop-shadow-sm">
-        {location.size}
+        {location.clicks} м²
       </div>
 
       <p className="text-[15px] leading-relaxed text-text-secondary mb-3">

@@ -215,7 +215,7 @@ export default function YandexMap({
         <YMapDefaultFeaturesLayer />
 
 
-        <YMapControls position="right">
+        <YMapControls position="left">
           <YMapZoomControl />
         </YMapControls>
 

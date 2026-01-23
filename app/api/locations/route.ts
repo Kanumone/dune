@@ -10,7 +10,6 @@ export async function GET() {
         lat,
         lng,
         title,
-        size,
         description,
         badges,
         categories,
@@ -24,7 +23,6 @@ export async function GET() {
       id: row.id,
       coords: [row.lat, row.lng],
       title: row.title,
-      size: row.size,
       description: row.description,
       badges: row.badges,
       categories: row.categories,
@@ -45,12 +43,12 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { title, size, lat, lng, description } = body;
+    const { title, lat, lng, description } = body;
 
     // Validate required fields
-    if (!title || !size || !lat || !lng) {
+    if (!title || !lat || !lng) {
       return NextResponse.json(
-        { error: 'Missing required fields: title, size, lat, lng' },
+        { error: 'Missing required fields: title, lat, lng' },
         { status: 400 }
       );
     }
@@ -73,15 +71,14 @@ export async function POST(request: Request) {
     // Insert new location
     const result = await pool.query(
       `
-      INSERT INTO locations (lat, lng, title, size, description, badges, categories, popularity, clicks)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
-      RETURNING id, lat, lng, title, size, description, badges, categories, popularity, clicks
+      INSERT INTO locations (lat, lng, title, description, badges, categories, popularity, clicks)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+      RETURNING id, lat, lng, title, description, badges, categories, popularity, clicks
       `,
       [
         lat,
         lng,
         title,
-        size,
         description || 'Описание скоро появится',
         [], // badges
         [], // categories
@@ -94,7 +91,6 @@ export async function POST(request: Request) {
       id: result.rows[0].id,
       coords: [result.rows[0].lat, result.rows[0].lng],
       title: result.rows[0].title,
-      size: result.rows[0].size,
       description: result.rows[0].description,
       badges: result.rows[0].badges,
       categories: result.rows[0].categories,

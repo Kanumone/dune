@@ -57,19 +57,21 @@ export default function LegendPanel({ onLocationAdded }: LegendPanelProps) {
 
         <div className="flex items-center gap-3 mb-3">
           <div className="flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-accent-warm" />
-            <span className="w-3 h-3 rounded-full bg-accent-warm" />
-            <span className="w-4 h-4 rounded-full bg-accent-warm" />
+            <span className="text-xs">❄️</span>
+            <span className="text-2xl">❄️</span>
+            <span className="text-4xl">❄️</span>
           </div>
           <p className="text-sm text-text-secondary m-0">Размер снежок — популярность</p>
         </div>
 
         <div className="flex items-center gap-3 mb-3">
-          <div className="flex items-center gap-1.5">
-            <span className="w-3 h-3 rounded-full bg-accent-warm opacity-40" />
-            <span className="w-3 h-3 rounded-full bg-accent-warm" />
-          </div>
-          <p className="text-sm text-text-secondary m-0">Яркость — активность сейчас</p>
+          <p className="text-2xl font-bold">+</p>
+          <p className="text-sm text-text-secondary m-0">Нажми, чтобы добавить новый сугроб</p>
+        </div>
+
+        <div className="flex items-center gap-3 mb-3">
+          <p className="text-l text-accent-warm font-bold">10 м²</p>
+          <p className="text-sm text-text-secondary m-0">Популярность сугроба</p>
         </div>
       </div>
 

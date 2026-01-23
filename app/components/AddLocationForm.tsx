@@ -11,7 +11,6 @@ interface AddLocationFormProps {
 export default function AddLocationForm({ isOpen, onClose, onSuccess }: AddLocationFormProps) {
   const [formData, setFormData] = useState({
     title: '',
-    size: '',
     mapLink: '',
     description: '',
   });
@@ -125,7 +124,7 @@ export default function AddLocationForm({ isOpen, onClose, onSuccess }: AddLocat
     setError(null);
 
     // Validate required fields
-    if (!formData.title.trim() || !formData.size.trim() || !formData.mapLink.trim()) {
+    if (!formData.title.trim() || !formData.mapLink.trim()) {
       setError('Пожалуйста, заполните все обязательные поля');
       return;
     }
@@ -148,7 +147,6 @@ export default function AddLocationForm({ isOpen, onClose, onSuccess }: AddLocat
         },
         body: JSON.stringify({
           title: formData.title.trim(),
-          size: formData.size.trim(),
           lat: coords.lat,
           lng: coords.lng,
           description: formData.description.trim() || 'Описание скоро появится',
@@ -163,7 +161,6 @@ export default function AddLocationForm({ isOpen, onClose, onSuccess }: AddLocat
       // Reset form
       setFormData({
         title: '',
-        size: '',
         mapLink: '',
         description: '',
       });
@@ -218,28 +215,6 @@ export default function AddLocationForm({ isOpen, onClose, onSuccess }: AddLocat
                 transition-all
               "
               placeholder="Например: Сугроб №4"
-              required
-            />
-          </div>
-
-          <div>
-            <label htmlFor="size" className="block text-sm font-medium text-winter-text mb-2">
-              Размер *
-            </label>
-            <input
-              type="text"
-              id="size"
-              name="size"
-              value={formData.size}
-              onChange={handleChange}
-              className="
-                w-full px-4 py-3 rounded-xl
-                bg-snow-white/50 border border-glass-border
-                text-winter-text placeholder-winter-text/40
-                focus:outline-none focus:ring-2 focus:ring-accent-warm/50
-                transition-all
-              "
-              placeholder="Например: 100 м²"
               required
             />
           </div>

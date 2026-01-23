@@ -5,7 +5,6 @@ export interface Location {
   id: number;
   coords: [number, number]; // [lat, lng]
   title: string;
-  size: string;
   description: string;
   badges: string[];
   categories: LocationCategory[];
