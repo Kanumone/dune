@@ -4,16 +4,15 @@ import React, { useEffect, useState, useMemo } from 'react';
 import ReactDOM from 'react-dom';
 import { Location, LocationCategory, Popularity } from '@/app/lib/types';
 
+// Import Yandex Maps types
+type YMaps3 = typeof import('@yandex/ymaps3-types');
+
 declare global {
   interface Window {
-    ymaps3: typeof ymaps3;
+    ymaps3?: YMaps3;
     ymaps3Loaded?: boolean;
     ymaps3Loading?: Promise<void>;
   }
-  const ymaps3: {
-    ready: Promise<void>;
-    import: (module: string) => Promise<any>;
-  };
 }
 
 interface YandexMapProps {
@@ -111,13 +110,20 @@ function createMarkerElement(location: Location): HTMLElement {
   return markerElement;
 }
 
+interface ReactifiedAPI {
+  reactify: {
+    useDefault: <T>(value: T, deps?: any[]) => T;
+  };
+  [key: string]: any;
+}
+
 export default function YandexMap({
   locations,
   activeFilter,
   onSelectLocation,
   selectedLocation,
 }: YandexMapProps) {
-  const [reactifiedAPI, setReactifiedAPI] = useState<any>(null);
+  const [reactifiedAPI, setReactifiedAPI] = useState<ReactifiedAPI | null>(null);
 
   // Memoize filtered locations to prevent unnecessary rerenders
   const filteredLocations = useMemo(() => {
@@ -150,25 +156,46 @@ export default function YandexMap({
     const initReactify = async () => {
       try {
         await loadYandexMapsScript();
-        await ymaps3.ready;
 
-        const [ymaps3React] = await Promise.all([
-          ymaps3.import('@yandex/ymaps3-reactify'),
-          ymaps3.import('@yandex/ymaps3-default-ui-theme'),
-        ]);
+        // Wait for ymaps3 to be available
+        if (!window.ymaps3) {
+          throw new Error('ymaps3 not loaded');
+        }
+
+        const ymaps3 = window.ymaps3;
+        await ymaps3.ready;
+        await ymaps3.import.registerCdn('https://cdn.jsdelivr.net/npm/{package}', ['@yandex/ymaps3-default-ui-theme@0.0']);
+
+        // Import reactify module
+        const ymaps3React = await ymaps3.import('@yandex/ymaps3-reactify');
 
         if (!mounted) return;
 
+        // Bind reactify to React and ReactDOM
         const reactify = ymaps3React.reactify.bindTo(React, ReactDOM);
-        const YMapComponents = reactify.module(ymaps3);
-        const YMapDefaultUITheme = reactify.module(
-          await ymaps3.import('@yandex/ymaps3-default-ui-theme')
-        );
+
+        // Create React components from ymaps3 core module
+        const {
+          YMap,
+          YMapDefaultSchemeLayer,
+          YMapDefaultFeaturesLayer,
+          YMapControls,
+          YMapMarker,
+        } = reactify.module(ymaps3);
+
+        // Import and reactify default UI theme components
+        const ymaps3DefaultUITheme = await ymaps3.import('@yandex/ymaps3-default-ui-theme' as any);
+        const uiThemeComponents = reactify.module(ymaps3DefaultUITheme) as any;
 
         setReactifiedAPI({
           reactify,
-          ...YMapComponents,
-          ...YMapDefaultUITheme,
+          YMap,
+          YMapDefaultSchemeLayer,
+          YMapDefaultFeaturesLayer,
+          YMapControls,
+          YMapMarker,
+          YMapZoomControl: uiThemeComponents.YMapZoomControl,
+          YMapDefaultMarker: uiThemeComponents.YMapDefaultMarker,
         });
       } catch (error) {
         console.error('Error initializing Yandex Maps:', error);
@@ -191,26 +218,28 @@ export default function YandexMap({
     reactifiedAPI;
 
   return (
-    <YMap location={reactify.useDefault(mapLocation, [mapLocation])}>
-      <YMapDefaultSchemeLayer />
-      <YMapDefaultFeaturesLayer />
+    <div id="map">
+      <YMap location={reactify.useDefault(mapLocation, [mapLocation])}>
+        <YMapDefaultSchemeLayer />
+        <YMapDefaultFeaturesLayer />
 
-      <YMapControls position="right">
-        <YMapZoomControl />
-      </YMapControls>
+        <YMapControls position="right">
+          <YMapZoomControl />
+        </YMapControls>
 
-      {filteredLocations.map((location) => (
-        <YMapDefaultMarker
-          key={location.id}
-          coordinates={reactify.useDefault(
-            [location.coords[1], location.coords[0]] as [number, number],
-            [location.id]
-          )}
-          title={location.title}
-          content={createMarkerElement(location)}
-          onClick={() => onSelectLocation(location)}
-        />
-      ))}
-    </YMap>
+        {filteredLocations.map((location) => (
+          <YMapDefaultMarker
+            key={location.id}
+            coordinates={reactify.useDefault(
+              [location.coords[1], location.coords[0]] as [number, number],
+              [location.id]
+            )}
+            title={location.title}
+            content={createMarkerElement(location)}
+            onClick={() => onSelectLocation(location)}
+          />
+        ))}
+      </YMap>
+    </div>
   );
 }
