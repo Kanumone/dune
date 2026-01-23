@@ -26,12 +26,50 @@ export default function AddLocationForm({ isOpen, onClose, onSuccess }: AddLocat
     setError(null);
   };
 
-  const extractCoordinatesFromMapLink = (link: string): { lat: number; lng: number } | null => {
+  const extractCoordinatesFromMapLink = async (link: string): Promise<{ lat: number; lng: number } | null> => {
+    try {
+      // Try to extract coordinates locally first
+      const localCoords = tryExtractCoordinatesLocally(link);
+      if (localCoords) {
+        return localCoords;
+      }
+
+      // If local extraction failed, try backend (for short links and other formats)
+      try {
+        const response = await fetch('/api/parse-map-link', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ url: link }),
+        });
+
+        if (response.ok) {
+          const coords = await response.json();
+          return coords;
+        }
+      } catch (backendError) {
+        console.error('Backend parsing failed:', backendError);
+      }
+
+      return null;
+    } catch {
+      return null;
+    }
+  };
+
+  const tryExtractCoordinatesLocally = (link: string): { lat: number; lng: number } | null => {
     try {
       // Yandex Maps format: https://yandex.by/maps/?ll=27.561500%2C53.904500&z=15
       const llMatch = link.match(/ll=([\d.]+)%2C([\d.]+)/);
       if (llMatch) {
         return { lng: parseFloat(llMatch[1]), lat: parseFloat(llMatch[2]) };
+      }
+
+      // Yandex Maps alternative format with comma: ?ll=27.561500,53.904500
+      const llCommaMatch = link.match(/ll=([\d.]+),([\d.]+)/);
+      if (llCommaMatch) {
+        return { lng: parseFloat(llCommaMatch[1]), lat: parseFloat(llCommaMatch[2]) };
       }
 
       // Google Maps format: https://www.google.com/maps/@53.904500,27.561500,15z
@@ -40,10 +78,40 @@ export default function AddLocationForm({ isOpen, onClose, onSuccess }: AddLocat
         return { lat: parseFloat(googleMatch[1]), lng: parseFloat(googleMatch[2]) };
       }
 
+      // Google Maps place format: /maps/place/.../@lat,lng
+      const googlePlaceMatch = link.match(/\/maps\/place\/[^/]+\/@([\d.]+),([\d.]+)/);
+      if (googlePlaceMatch) {
+        return { lat: parseFloat(googlePlaceMatch[1]), lng: parseFloat(googlePlaceMatch[2]) };
+      }
+
       // Coordinates in query params: ?lat=53.904500&lng=27.561500
-      const queryMatch = link.match(/lat=([\d.]+).*lng=([\d.]+)/);
-      if (queryMatch) {
-        return { lat: parseFloat(queryMatch[1]), lng: parseFloat(queryMatch[2]) };
+      const queryLatLngMatch = link.match(/[?&]lat=([\d.]+).*[?&]lng=([\d.]+)/);
+      if (queryLatLngMatch) {
+        return { lat: parseFloat(queryLatLngMatch[1]), lng: parseFloat(queryLatLngMatch[2]) };
+      }
+
+      // Alternative format: ?latitude=53.904500&longitude=27.561500
+      const queryLatitudeLongitudeMatch = link.match(/[?&]latitude=([\d.]+).*[?&]longitude=([\d.]+)/);
+      if (queryLatitudeLongitudeMatch) {
+        return { lat: parseFloat(queryLatitudeLongitudeMatch[1]), lng: parseFloat(queryLatitudeLongitudeMatch[2]) };
+      }
+
+      // Yandex Maps whatshere format: ?whatshere[point]=27.561500,53.904500
+      const whatsHereMatch = link.match(/whatshere\[point\]=([\d.]+),([\d.]+)/);
+      if (whatsHereMatch) {
+        return { lng: parseFloat(whatsHereMatch[1]), lat: parseFloat(whatsHereMatch[2]) };
+      }
+
+      // 2GIS format: https://2gis.by/minsk/geo/27.561500%2C53.904500
+      const dgisMatch = link.match(/\/geo\/([\d.]+)%2C([\d.]+)/);
+      if (dgisMatch) {
+        return { lng: parseFloat(dgisMatch[1]), lat: parseFloat(dgisMatch[2]) };
+      }
+
+      // 2GIS alternative format with comma
+      const dgisCommaMatch = link.match(/\/geo\/([\d.]+),([\d.]+)/);
+      if (dgisCommaMatch) {
+        return { lng: parseFloat(dgisCommaMatch[1]), lat: parseFloat(dgisCommaMatch[2]) };
       }
 
       return null;
@@ -62,14 +130,15 @@ export default function AddLocationForm({ isOpen, onClose, onSuccess }: AddLocat
       return;
     }
 
+    setIsSubmitting(true);
+
     // Extract coordinates from map link
-    const coords = extractCoordinatesFromMapLink(formData.mapLink);
+    const coords = await extractCoordinatesFromMapLink(formData.mapLink);
     if (!coords) {
       setError('Не удалось извлечь координаты из ссылки. Проверьте формат ссылки.');
+      setIsSubmitting(false);
       return;
     }
-
-    setIsSubmitting(true);
 
     try {
       const response = await fetch('/api/locations', {

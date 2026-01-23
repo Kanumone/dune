@@ -42,23 +42,22 @@ export default function PlaceCard({ location, onClose }: PlaceCardProps) {
         </svg>
       </button>
 
-      <div className="flex justify-between items-start mb-6 gap-4">
+      <div className="flex justify-between items-start gap-4 mb-3">
         <div className="flex-1">
-          <h2 className="text-2xl font-bold leading-tight mb-1 text-winter-text">{location.title}</h2>
-        <p className="text-[15px] leading-relaxed text-text-secondary mb-6">
-          {location.description}
-        </p>
+          <h2 className="text-2xl font-bold leading-tight text-winter-text">{location.title}</h2>
         </div>
-        <div className="w-[120px] h-[120px] flex-shrink-0">
+        <div className="w-[100px] h-[100px] flex-shrink-0">
           <SnowdriftIllustration />
         </div>
       </div>
 
-      <div className="text-5xl font-bold leading-none mb-6 text-accent-warm drop-shadow-sm">
+      <div className="text-4xl font-bold leading-none mb-3 text-accent-warm drop-shadow-sm">
         {location.size}
       </div>
 
-
+      <p className="text-[15px] leading-relaxed text-text-secondary mb-3">
+        {location.description}
+      </p>
       <div className="flex flex-wrap gap-2 mb-6">
         {location.badges.map((badge, index) => (
           <span
@@ -69,6 +68,7 @@ export default function PlaceCard({ location, onClose }: PlaceCardProps) {
           </span>
         ))}
       </div>
+
 
       <button
         onClick={handleOpenMaps}
