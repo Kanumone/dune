@@ -10,14 +10,12 @@ export async function GET() {
         lat,
         lng,
         title,
-        district,
         size,
         description,
         badges,
-        time_info,
-        peak,
         categories,
-        popularity
+        popularity,
+        clicks
       FROM locations
       ORDER BY id
     `);
@@ -26,14 +24,12 @@ export async function GET() {
       id: row.id,
       coords: [row.lat, row.lng],
       title: row.title,
-      district: row.district,
       size: row.size,
       description: row.description,
       badges: row.badges,
-      time: row.time_info,
-      peak: row.peak,
       categories: row.categories,
       popularity: row.popularity,
+      clicks: row.clicks,
     }));
 
     return NextResponse.json(locations);

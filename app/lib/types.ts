@@ -5,12 +5,10 @@ export interface Location {
   id: number;
   coords: [number, number]; // [lat, lng]
   title: string;
-  district: string;
   size: string;
   description: string;
   badges: string[];
-  time: string;
-  peak: string;
   categories: LocationCategory[];
   popularity: Popularity;
+  clicks: number;
 }
