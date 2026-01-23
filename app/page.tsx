@@ -22,6 +22,7 @@ export default function Home() {
         if (response.ok) {
           const data = await response.json();
           setLocations(data);
+          setLoading(false);
           return;
         }
       } catch (error) {

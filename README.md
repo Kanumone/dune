@@ -1,96 +1,36 @@
-# Карта Сугробов
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-Интерактивная карта развлекательных локаций Минска, которые согревают зиму.
+## Getting Started
 
-## Особенности
+First, run the development server:
 
-- ❄️ Frosted glass дизайн со снежной зимней темой
-- 🗺️ Интерактивная карта на основе Яндекс.Карт
-- 🎨 Светлая снежная дымка с мягкими тенями
-- ✨ Анимированный hero-экран с CTA кнопкой
-- 🎯 Floating карточка справа с детальной информацией
-- 🔍 Система фильтров по категориям (музыка, угар, уют, необычное)
-- 📊 Легенда для чтения карты
-- 📍 Маркеры разных размеров (популярность мест)
-
-## Установка
-
-1. Получите API ключ для Яндекс.Карт:
-   - Перейдите на https://developer.tech.yandex.ru/
-   - Создайте новое приложение
-   - Получите API ключ для JavaScript API 3.0
-
-2. Замените `YOUR_API_KEY` в `index.html` на ваш ключ:
-   ```html
-   <script src="https://api-maps.yandex.ru/v3/?apikey=ВАШ_КЛЮЧ&lang=ru_RU" defer></script>
-   ```
-
-3. Откройте `index.html` в браузере или запустите локальный сервер:
-   ```bash
-   # С помощью Python
-   python -m http.server 8000
-
-   # С помощью Node.js
-   npx serve
-   ```
-
-## Структура проекта
-
-```
-minskie-dunes/
-├── index.html       # Основная HTML структура
-├── styles.css       # Стили и тёмная тема
-├── app.js          # Логика приложения и карты
-└── README.md       # Документация
+```bash
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
 ```
 
-## Технологии
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-- Яндекс.Карты API 3.0
-- Vanilla JavaScript
-- CSS Grid & Flexbox
-- CSS Variables для темизации
-- Touch events для мобильных взаимодействий
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-## Кастомизация
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-### Цвета
+## Learn More
 
-Измените CSS переменные в `styles.css`:
+To learn more about Next.js, take a look at the following resources:
 
-```css
-:root {
-    --sand-light: #f4d8a8;
-    --sand-medium: #e8b968;
-    --sand-dark: #d4a44f;
-}
-```
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-### Локации
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
-Добавьте новые места в `app.js`:
+## Deploy on Vercel
 
-```javascript
-const locations = [
-    {
-        id: 1,
-        coords: [53.9045, 27.5615],
-        title: 'Название места',
-        rating: 4.8,
-        tags: ['тег1', 'тег2'],
-        distance: '10 мин пешком',
-        type: 'fire' // fire, music, camera
-    }
-];
-```
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
-## Браузерная поддержка
-
-- Chrome/Edge 90+
-- Safari 14+
-- Firefox 88+
-- Мобильные браузеры (iOS Safari, Chrome Mobile)
-
-## Лицензия
-
-MIT
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
