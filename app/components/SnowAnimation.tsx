@@ -10,12 +10,45 @@ interface Snowflake {
   animationDelay: string;
 }
 
-export default function SnowAnimation() {
-  const [snowflakes, setSnowflakes] = useState<Snowflake[]>([]);
+function useDeviceCapabilities() {
+  const [snowflakeCount, setSnowflakeCount] = useState(80);
 
   useEffect(() => {
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (prefersReducedMotion) {
+      setSnowflakeCount(0);
+      return;
+    }
+
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    const isTablet = /iPad|Android/i.test(navigator.userAgent) && window.innerWidth >= 768;
+    const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+
+    const lowPowerDevice = navigator.hardwareConcurrency && navigator.hardwareConcurrency < 4;
+
+    if (lowPowerDevice || (isMobile && !isTablet)) {
+      setSnowflakeCount(30);
+    } else if (isTablet || isTouchDevice) {
+      setSnowflakeCount(50);
+    } else {
+      setSnowflakeCount(80);
+    }
+  }, []);
+
+  return snowflakeCount;
+}
+
+export default function SnowAnimation() {
+  const [snowflakes, setSnowflakes] = useState<Snowflake[]>([]);
+  const count = useDeviceCapabilities();
+
+  useEffect(() => {
+    if (count === 0) {
+      setSnowflakes([]);
+      return;
+    }
+
     const flakes: Snowflake[] = [];
-    const count = 80;
 
     for (let i = 0; i < count; i++) {
       const size = Math.random() * 0.8 + 0.7; // 0.7 to 1.5
@@ -32,10 +65,18 @@ export default function SnowAnimation() {
     }
 
     setSnowflakes(flakes);
-  }, []);
+  }, [count]);
+
+  if (count === 0) {
+    return null;
+  }
 
   return (
-    <div className="fixed top-0 left-0 w-full h-full pointer-events-none z-[100] overflow-hidden">
+    <div
+      className="fixed top-0 left-0 w-full h-full pointer-events-none z-[100] overflow-hidden"
+      aria-hidden="true"
+      role="presentation"
+    >
       {snowflakes.map((flake) => (
         <div
           key={flake.id}

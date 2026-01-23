@@ -222,6 +222,7 @@ export default function YandexMap({
       <YMap location={reactify.useDefault(mapLocation, [mapLocation])}>
         <YMapDefaultSchemeLayer />
         <YMapDefaultFeaturesLayer />
+        
 
         <YMapControls position="right">
           <YMapZoomControl />

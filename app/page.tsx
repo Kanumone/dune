@@ -172,7 +172,7 @@ export default function Home() {
         onSelectLocation={handleSelectLocation}
         selectedLocation={selectedLocation}
       />
-      <SnowAnimation />
+      {/* <SnowAnimation /> */}
       <FiltersPanel activeFilter={activeFilter} onFilterChange={handleFilterChange} />
       <LegendPanel />
       <PlaceCard location={selectedLocation} onClose={handleClosePlaceCard} />
