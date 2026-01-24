@@ -3,11 +3,9 @@
 import { useState, useEffect } from 'react';
 import { Location, LocationCategory } from '@/app/lib/types';
 import Header from '@/app/components/Header';
-import FiltersPanel from '@/app/components/FiltersPanel';
 import LegendPanel from '@/app/components/LegendPanel';
 import ContactPanel from '@/app/components/ContactPanel';
 import PlaceCard from '@/app/components/PlaceCard';
-import SnowAnimation from '@/app/components/SnowAnimation';
 import YandexMap from '@/app/components/YandexMap';
 
 export default function Home() {
@@ -15,6 +13,8 @@ export default function Home() {
   const [activeFilter, setActiveFilter] = useState<LocationCategory | null>(null);
   const [selectedLocation, setSelectedLocation] = useState<Location | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isLegendOpen, setIsLegendOpen] = useState(false);
+  const [isContactOpen, setIsContactOpen] = useState(false);
 
   const fetchLocations = async () => {
     try {
@@ -42,10 +42,26 @@ export default function Home() {
 
   const handleSelectLocation = (location: Location) => {
     setSelectedLocation(location);
+    setIsLegendOpen(false);
+    setIsContactOpen(false);
   };
 
   const handleClosePlaceCard = () => {
     setSelectedLocation(null);
+  };
+
+  const handleToggleLegend = () => {
+    if (!isLegendOpen) {
+      setIsContactOpen(false); // Close contact panel when opening legend
+    }
+    setIsLegendOpen(!isLegendOpen);
+  };
+
+  const handleToggleContact = () => {
+    if (!isContactOpen) {
+      setIsLegendOpen(false); // Close legend panel when opening contact
+    }
+    setIsContactOpen(!isContactOpen);
   };
 
   if (loading) {
@@ -67,8 +83,15 @@ export default function Home() {
       />
       {/* <SnowAnimation /> */}
       {/* <FiltersPanel activeFilter={activeFilter} onFilterChange={handleFilterChange} /> */}
-      <LegendPanel onLocationAdded={fetchLocations} />
-      <ContactPanel />
+      <LegendPanel
+        onLocationAdded={fetchLocations}
+        isOpen={isLegendOpen}
+        onToggle={handleToggleLegend}
+      />
+      <ContactPanel
+        isOpen={isContactOpen}
+        onToggle={handleToggleContact}
+      />
       <PlaceCard location={selectedLocation} onClose={handleClosePlaceCard} />
     </>
   );

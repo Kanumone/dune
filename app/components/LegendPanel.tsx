@@ -5,10 +5,11 @@ import AddLocationForm from './AddLocationForm';
 
 interface LegendPanelProps {
   onLocationAdded?: () => void;
+  isOpen: boolean;
+  onToggle: () => void;
 }
 
-export default function LegendPanel({ onLocationAdded }: LegendPanelProps) {
-  const [isLegendOpen, setIsLegendOpen] = useState(false);
+export default function LegendPanel({ onLocationAdded, isOpen, onToggle }: LegendPanelProps) {
   const [isFormOpen, setIsFormOpen] = useState(false);
 
   const handleLocationAdded = () => {
@@ -34,7 +35,7 @@ export default function LegendPanel({ onLocationAdded }: LegendPanelProps) {
 
       {/* Help button */}
       <button
-        onClick={() => setIsLegendOpen(!isLegendOpen)}
+        onClick={onToggle}
         className="
           fixed right-6 top-1/2 -translate-y-1/2 z-[900] w-12 h-12 flex items-center justify-center
           frosted-glass rounded-full cursor-pointer transition-all duration-300 ease-out
@@ -48,9 +49,9 @@ export default function LegendPanel({ onLocationAdded }: LegendPanelProps) {
       {/* Legend panel */}
       <div
         className={`
-          fixed right-20 top-1/2 z-[900] p-4 md:p-6 frosted-glass rounded-3xl min-w-[280px]
+          fixed bottom-20 left-0 right-0 z-[900] p-4 md:p-6 frosted-glass
           transition-all duration-400 ease-out
-          ${isLegendOpen ? 'opacity-100 -translate-y-1/2 -translate-x-0 pointer-events-auto' : 'opacity-0 -translate-y-1/2 translate-x-4 pointer-events-none'}
+          ${isOpen ? 'opacity-100 translate-y-0 pointer-events-auto' : 'opacity-0 translate-y-4 pointer-events-none'}
         `}
       >
         <h3 className="text-base font-semibold mb-4 text-winter-text">Как читать карту</h3>
