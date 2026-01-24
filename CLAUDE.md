@@ -27,12 +27,14 @@ npm run db:push
 ### Migration Commands
 
 **For local development (recommended):**
+
 ```bash
 # Quick sync: applies schema.ts changes directly to DB without migration files
 npm run db:push
 ```
 
 **For production/team workflow:**
+
 ```bash
 # 1. Generate migration SQL files from schema changes
 npm run db:generate
@@ -45,12 +47,14 @@ npm run db:migrate
 ```
 
 **Database GUI:**
+
 ```bash
 # Open Drizzle Studio (visual database browser)
 npm run db:studio
 ```
 
 **Key difference:**
+
 - `db:push` - Fast, no files, for local dev only. Changes schema directly.
 - `db:migrate` - Uses versioned migration files. Safe for production. Trackable in git.
 
@@ -75,6 +79,7 @@ docker-compose down -v
 The project uses **Drizzle ORM** for type-safe database operations. Schema is defined in `app/lib/schema.ts` and synced with `app/lib/types.ts`.
 
 **Key fields in locations table:**
+
 - `id` (serial): Primary key
 - `lat`, `lng` (decimal): Coordinates stored as `[lat, lng]` format
 - `title` (varchar): Location name
@@ -87,6 +92,7 @@ The project uses **Drizzle ORM** for type-safe database operations. Schema is de
 - `createdAt` (timestamp): Creation timestamp
 
 **Database client usage:**
+
 - Import `db` from `app/lib/db.ts` for Drizzle queries
 - Import table definitions from `app/lib/schema.ts`
 - Use Drizzle query API (not raw SQL) for all database operations
@@ -95,11 +101,106 @@ The project uses **Drizzle ORM** for type-safe database operations. Schema is de
 
 I use .env file for saving environment variables. If you add new secrets do'nt forget add it to .env.example
 
+**Admin-specific environment variables:**
+
+- `JWT_SECRET` - Secret key for signing JWT tokens (required for admin authentication)
+
+## Admin Panel
+
+The application includes a full-featured admin panel for moderating user-submitted locations.
+
+### Authentication System
+
+The admin panel uses JWT-based authentication with the following components:
+
+**Authentication utilities** (`app/lib/auth.ts`):
+
+- `createToken(payload)` - Creates JWT token with 24h expiry
+- `verifyToken(token)` - Validates JWT and returns payload
+- `setAuthCookie(token)` - Sets httpOnly cookie with JWT
+- `getAuthToken()` - Retrieves JWT from cookies
+- `clearAuthCookie()` - Removes authentication cookie
+- `verifyAuth()` - Validates current session (returns user payload or null)
+- `requireAuth(request)` - Middleware helper that redirects to login if unauthorized
+
+**Password security** (`app/lib/password.ts`):
+
+- Uses bcrypt for password hashing
+- `hashPassword(password)` - Hashes password with salt
+- `verifyPassword(password, hash)` - Compares password with hash
+
+**Middleware** (`middleware.ts`):
+
+- Protects all `/admin/*` routes except `/admin/login`
+- Redirects unauthorized users to login page
+- Redirects authenticated users away from login page to admin dashboard
+
+### Database Schema
+
+**Users table** (defined in `app/lib/schema.ts`):
+
+- `id` (serial): Primary key
+- `username` (varchar): Unique username
+- `password` (varchar): Bcrypt-hashed password
+- `role` (varchar): User role (currently only 'admin')
+- `createdAt` (timestamp): Account creation timestamp
+
+### Creating Admin Users
+
+Use the interactive script to create admin accounts:
+
+```bash
+npm run create-admin
+```
+
+The script will prompt for username and password (minimum 8 characters). Passwords are automatically hashed before storage.
+
+### Admin Routes
+
+**Pages:**
+
+- `/admin/login` - Authentication page (redirects to `/admin` if already logged in)
+- `/admin` - Main admin dashboard (protected by middleware)
+
+### Admin Panel Features
+
+The admin dashboard (`app/admin/page.tsx`) provides:
+
+1. **Location Management Table:**
+
+   - Shows all locations (both visible and hidden)
+   - Displays visibility status with color-coded badges
+   - Click rows to expand and view full location details
+2. **Location Actions:**
+
+   - **Show/Hide toggle** - Controls `canShow` field for moderation
+   - **Delete** - Permanently removes location (with confirmation modal)
+3. **Expandable Rows:**
+
+   - Click any row to view detailed information:
+     - ID, coordinates, description
+     - Categories, badges, popularity
+     - Click count
+4. **Session Management:**
+
+   - Logout button in header
+   - Automatic redirect to login if session expires
+
+### Security Notes
+
+- All admin API routes verify JWT authentication via `verifyAuth()`
+- Passwords are hashed with bcrypt (never stored in plaintext)
+- JWT tokens stored in httpOnly cookies (not accessible via JavaScript)
+- Cookies use `secure` flag in production
+- Middleware prevents unauthorized access to admin routes
+- All location modification operations require valid admin session
+
 ## Architecture
 
 ### Client-Side State Management
 
 The app uses React hooks for state management in `app/page.tsx`:
+
 - `locations`: Array of all locations fetched from API
 - `activeFilter`: Current category filter (unused in UI currently)
 - `selectedLocation`: Location shown in PlaceCard
@@ -129,7 +230,9 @@ Marker size is dynamic based on clicks count: 32px at 0 clicks, scaling to 56px 
 
 All API routes use Drizzle ORM via the `db` instance from `app/lib/db.ts`:
 
-- `GET /api/locations` - Returns all locations (uses `db.select()`)
+**Public routes:**
+
+- `GET /api/locations` - Returns visible locations where `canShow: true` (uses `db.select()`)
 - `POST /api/locations` - Creates new location with `canShow: false` (uses `db.insert()`)
   - Required fields: `title`, `lat`, `lng`
   - Optional: `description` (defaults to "Там явно что-то интересное")
@@ -137,9 +240,18 @@ All API routes use Drizzle ORM via the `db` instance from `app/lib/db.ts`:
 - `PUT /api/locations/[id]/clicks` - Increments click count (uses `db.update()` with `sql` increment)
 - `POST /api/parse-map-link` - Parses Yandex Maps share links to extract coordinates (no DB interaction)
 
+**Admin routes** (require authentication):
+
+- `POST /api/auth/login` - Authenticates admin user, sets JWT cookie
+- `POST /api/auth/logout` - Clears authentication session
+- `GET /api/admin/locations` - Returns ALL locations (including hidden ones)
+- `PUT /api/locations/[id]` - Updates location visibility (`canShow` field)
+- `DELETE /api/locations/[id]` - Permanently deletes location
+
 ### Type System
 
 Core types defined in `app/lib/types.ts` (must stay in sync with `app/lib/schema.ts`):
+
 - `Location`: Main data model
   - `coords: [number, number]` - Always `[lat, lng]` format (NOT the same as Yandex Maps format)
   - `canShow: boolean` - Visibility flag for moderation
@@ -165,6 +277,7 @@ Panels (LegendPanel, ContactPanel) are mutually exclusive - opening one closes t
 ### Adding New Locations
 
 The AddLocationForm supports two input methods:
+
 1. Pasting a Yandex Maps share link (parsed via `/api/parse-map-link`)
 2. Manual coordinate entry
 
@@ -172,7 +285,7 @@ Both create a POST request to `/api/locations` which returns the created locatio
 
 ### Coordinate Handling
 
-**Always remember**: Database stores `[lat, lng]` but Yandex Maps uses `[lng, lat]`. Convert when passing to map components.
+**Always remember**: Server returns `[lat, lng]` but Yandex Maps uses `[lng, lat]`. Convert when passing to map components.
 
 ### Yandex Maps API Key
 
