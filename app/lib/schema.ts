@@ -13,3 +13,14 @@ export const locations = pgTable('locations', {
   canShow: boolean('can_show').notNull().default(false),
   createdAt: timestamp('created_at').defaultNow(),
 });
+
+export const users = pgTable('users', {
+  id: serial('id').primaryKey(),
+  username: varchar('username', { length: 255 }).notNull().unique(),
+  password: varchar('password', { length: 255 }).notNull(),
+  role: varchar('role', { length: 50 }).notNull().default('admin'),
+  createdAt: timestamp('created_at').defaultNow(),
+});
+
+export type User = typeof users.$inferSelect;
+export type NewUser = typeof users.$inferInsert;
