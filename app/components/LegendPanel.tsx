@@ -24,7 +24,7 @@ export default function LegendPanel({ onLocationAdded, isOpen, onToggle }: Legen
       <button
         onClick={() => setIsFormOpen(true)}
         className="
-          fixed right-6 top-1/2 -translate-y-[84px] z-[900] w-12 h-12 flex items-center justify-center
+          fixed right-6 bottom-[152px] z-[900] w-12 h-12 flex items-center justify-center
           frosted-glass rounded-full cursor-pointer transition-all duration-300 ease-out
           text-winter-text text-2xl font-bold hover:scale-110 hover:shadow-lg
         "
@@ -37,7 +37,7 @@ export default function LegendPanel({ onLocationAdded, isOpen, onToggle }: Legen
       <button
         onClick={onToggle}
         className="
-          fixed right-6 top-1/2 -translate-y-1/2 z-[900] w-12 h-12 flex items-center justify-center
+          fixed right-6 bottom-[88px] z-[900] w-12 h-12 flex items-center justify-center
           frosted-glass rounded-full cursor-pointer transition-all duration-300 ease-out
           text-winter-text text-xl font-bold hover:scale-110 hover:shadow-lg
         "
@@ -54,7 +54,16 @@ export default function LegendPanel({ onLocationAdded, isOpen, onToggle }: Legen
           ${isOpen ? 'opacity-100 translate-y-0 pointer-events-auto' : 'opacity-0 translate-y-4 pointer-events-none'}
         `}
       >
-        <h3 className="text-base font-semibold mb-4 text-winter-text">Как читать карту</h3>
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-base font-semibold text-winter-text">Как читать карту</h3>
+          <button
+            onClick={onToggle}
+            className="text-winter-text hover:text-accent-warm transition-colors text-2xl leading-none"
+            aria-label="Закрыть"
+          >
+            ×
+          </button>
+        </div>
 
         <div className="flex items-center gap-3 mb-3">
           <div className="flex items-center gap-1.5">

@@ -13,7 +13,7 @@ export default function ContactPanel({ isOpen, onToggle }: ContactPanelProps) {
       <button
         onClick={onToggle}
         className="
-          fixed right-6 top-1/2 translate-y-[36px] z-[900] w-12 h-12 flex items-center justify-center
+          fixed right-6 bottom-6 z-[900] w-12 h-12 flex items-center justify-center
           frosted-glass rounded-full cursor-pointer transition-all duration-300 ease-out
           text-winter-text text-xl font-bold hover:scale-110 hover:shadow-lg
         "
@@ -30,7 +30,16 @@ export default function ContactPanel({ isOpen, onToggle }: ContactPanelProps) {
           ${isOpen ? 'opacity-100 translate-y-0 pointer-events-auto' : 'opacity-0 translate-y-4 pointer-events-none'}
         `}
       >
-        <h3 className="text-base font-semibold mb-4 text-winter-text">Связаться с разработчиками</h3>
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-base font-semibold text-winter-text">Связаться с разработчиками</h3>
+          <button
+            onClick={onToggle}
+            className="text-winter-text hover:text-accent-warm transition-colors text-2xl leading-none"
+            aria-label="Закрыть"
+          >
+            ×
+          </button>
+        </div>
         <div className="flex items-start gap-3">
           <span className="text-xl">💬</span>
           <div>
