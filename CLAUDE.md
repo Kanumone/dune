@@ -4,32 +4,59 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a Next.js 16 application for mapping locations in Minsk, built with React 19, TypeScript, PostgreSQL, and the Yandex Maps API. The app displays interactive map markers (sized by click count) where users can view location details and add new places.
+This is a Next.js 16 application for mapping locations in Minsk, built with React 19, TypeScript, PostgreSQL (via Drizzle ORM), and the Yandex Maps API. The app displays interactive map markers (sized by click count) where users can view location details and add new places.
 
-## Development Commands
+## Rules
 
-```bash
-# Start development server (runs on http://localhost:3000)
-npm run dev
-
-# Build for production
-npm run build
-
-# Start production server
-npm start
-
-# Run linter
-npm run lint
-```
+Never start dev server, cause i will do it myself.
 
 ## Database Setup
 
-The application uses PostgreSQL running in Docker:
+The application uses PostgreSQL running in Docker with Drizzle ORM for database operations.
+
+### Initial Setup
 
 ```bash
 # Start PostgreSQL container
 docker-compose up -d
 
+# Apply schema to database (first time or after schema changes)
+npm run db:push
+```
+
+### Migration Commands
+
+**For local development (recommended):**
+```bash
+# Quick sync: applies schema.ts changes directly to DB without migration files
+npm run db:push
+```
+
+**For production/team workflow:**
+```bash
+# 1. Generate migration SQL files from schema changes
+npm run db:generate
+
+# 2. Review generated SQL in drizzle/migrations/, then commit to git
+git add drizzle/migrations/ && git commit -m "migration message"
+
+# 3. Apply migrations on server (uses migration files)
+npm run db:migrate
+```
+
+**Database GUI:**
+```bash
+# Open Drizzle Studio (visual database browser)
+npm run db:studio
+```
+
+**Key difference:**
+- `db:push` - Fast, no files, for local dev only. Changes schema directly.
+- `db:migrate` - Uses versioned migration files. Safe for production. Trackable in git.
+
+### Database Management
+
+```bash
 # View database logs
 docker logs minskie-dunes-db
 
@@ -38,13 +65,35 @@ docker exec -it minskie-dunes-db psql -U minskie -d minskie_dunes
 
 # Stop database
 docker-compose down
+
+# Remove database volume (WARNING: deletes all data)
+docker-compose down -v
 ```
 
-Database schema is automatically initialized from `schema.sql` on first run. The main table is `locations` with columns: id, lat, lng, title, description, badges (text[]), categories (text[]), popularity, clicks.
+### Database Schema Management
+
+The project uses **Drizzle ORM** for type-safe database operations. Schema is defined in `app/lib/schema.ts` and synced with `app/lib/types.ts`.
+
+**Key fields in locations table:**
+- `id` (serial): Primary key
+- `lat`, `lng` (decimal): Coordinates stored as `[lat, lng]` format
+- `title` (varchar): Location name
+- `description` (text): Location details
+- `badges` (text[]): Array of badge labels
+- `categories` (text[]): Array of category types ('music' | 'weird' | 'party' | 'cozy')
+- `popularity` (varchar): Size classification ('small' | 'medium' | 'large')
+- `clicks` (integer): Click counter for marker sizing
+- `canShow` (boolean): Visibility flag (default: false for new locations)
+- `createdAt` (timestamp): Creation timestamp
+
+**Database client usage:**
+- Import `db` from `app/lib/db.ts` for Drizzle queries
+- Import table definitions from `app/lib/schema.ts`
+- Use Drizzle query API (not raw SQL) for all database operations
 
 ## Environment Configuration
 
-Copy `.env.example` to `.env` for local development. The DATABASE_URL must point to the PostgreSQL instance (default: `postgresql://minskie:minskie_dev_password@localhost:5432/minskie_dunes`).
+I use .env file for saving environment variables. If you add new secrets do'nt forget add it to .env.example
 
 ## Architecture
 
@@ -78,19 +127,26 @@ Marker size is dynamic based on clicks count: 32px at 0 clicks, scaling to 56px 
 
 ### API Routes
 
-- `GET /api/locations` - Returns all locations
-- `POST /api/locations` - Creates new location (requires: title, lat, lng; optional: description)
-- `POST /api/locations/[id]/clicks` - Increments click count
-- `POST /api/parse-map-link` - Parses Yandex Maps share links to extract coordinates
+All API routes use Drizzle ORM via the `db` instance from `app/lib/db.ts`:
 
-All API routes use the pg Pool from `app/lib/db.ts` which connects via DATABASE_URL.
+- `GET /api/locations` - Returns all locations (uses `db.select()`)
+- `POST /api/locations` - Creates new location with `canShow: false` (uses `db.insert()`)
+  - Required fields: `title`, `lat`, `lng`
+  - Optional: `description` (defaults to "Там явно что-то интересное")
+  - Auto-populated: `badges: []`, `categories: []`, `popularity: 'small'`, `clicks: 0`
+- `PUT /api/locations/[id]/clicks` - Increments click count (uses `db.update()` with `sql` increment)
+- `POST /api/parse-map-link` - Parses Yandex Maps share links to extract coordinates (no DB interaction)
 
 ### Type System
 
-Core types defined in `app/lib/types.ts`:
-- `Location`: Main data model (coords as `[lat, lng]` tuple)
+Core types defined in `app/lib/types.ts` (must stay in sync with `app/lib/schema.ts`):
+- `Location`: Main data model
+  - `coords: [number, number]` - Always `[lat, lng]` format (NOT the same as Yandex Maps format)
+  - `canShow: boolean` - Visibility flag for moderation
 - `LocationCategory`: 'music' | 'weird' | 'party' | 'cozy'
 - `Popularity`: 'small' | 'medium' | 'large'
+
+**Important**: Drizzle returns decimals as strings, so coordinates must be parsed with `parseFloat()` when mapping from DB rows to Location objects.
 
 ### Component Structure
 

@@ -1,36 +1,26 @@
 import { NextResponse } from 'next/server';
-import pool from '@/app/lib/db';
+import { db } from '@/app/lib/db';
+import { locations } from '@/app/lib/schema';
 import { Location } from '@/app/lib/types';
+import { asc, eq } from 'drizzle-orm';
 
 export async function GET() {
   try {
-    const result = await pool.query(`
-      SELECT
-        id,
-        lat,
-        lng,
-        title,
-        description,
-        badges,
-        categories,
-        popularity,
-        clicks
-      FROM locations
-      ORDER BY id
-    `);
+    const result = await db.select().from(locations).where(eq(locations.canShow, true)).orderBy(asc(locations.id));
 
-    const locations: Location[] = result.rows.map(row => ({
+    const locationsData: Location[] = result.map(row => ({
       id: row.id,
-      coords: [row.lat, row.lng],
+      coords: [parseFloat(row.lat), parseFloat(row.lng)],
       title: row.title,
       description: row.description,
       badges: row.badges,
-      categories: row.categories,
-      popularity: row.popularity,
+      categories: row.categories as Location['categories'],
+      popularity: row.popularity as Location['popularity'],
       clicks: row.clicks,
+      canShow: row.canShow,
     }));
 
-    return NextResponse.json(locations);
+    return NextResponse.json(locationsData);
   } catch (error) {
     console.error('Database error:', error);
     return NextResponse.json(
@@ -69,33 +59,28 @@ export async function POST(request: Request) {
     }
 
     // Insert new location
-    const result = await pool.query(
-      `
-      INSERT INTO locations (lat, lng, title, description, badges, categories, popularity, clicks)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-      RETURNING id, lat, lng, title, description, badges, categories, popularity, clicks
-      `,
-      [
-        lat,
-        lng,
-        title,
-        description || 'Описание скоро появится',
-        [], // badges
-        [], // categories
-        'small', // default popularity
-        0, // initial clicks
-      ]
-    );
+    const result = await db.insert(locations).values({
+      lat: lat.toString(),
+      lng: lng.toString(),
+      title,
+      description: description || 'Там явно что-то интересное',
+      badges: [],
+      categories: [],
+      popularity: 'small',
+      clicks: 0,
+      canShow: false,
+    }).returning();
 
     const newLocation: Location = {
-      id: result.rows[0].id,
-      coords: [result.rows[0].lat, result.rows[0].lng],
-      title: result.rows[0].title,
-      description: result.rows[0].description,
-      badges: result.rows[0].badges,
-      categories: result.rows[0].categories,
-      popularity: result.rows[0].popularity,
-      clicks: result.rows[0].clicks,
+      id: result[0].id,
+      coords: [parseFloat(result[0].lat), parseFloat(result[0].lng)],
+      title: result[0].title,
+      description: result[0].description,
+      badges: result[0].badges,
+      categories: result[0].categories as Location['categories'],
+      popularity: result[0].popularity as Location['popularity'],
+      clicks: result[0].clicks,
+      canShow: result[0].canShow,
     };
 
     return NextResponse.json(newLocation, { status: 201 });

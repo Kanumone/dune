@@ -10,4 +10,5 @@ export interface Location {
   categories: LocationCategory[];
   popularity: Popularity;
   clicks: number;
+  canShow: boolean;
 }
