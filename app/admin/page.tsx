@@ -160,7 +160,7 @@ export default function AdminPanel() {
             </h2>
           </div>
 
-          <div className="overflow-x-auto">
+          <div className="max-h-[calc(100vh-280px)] overflow-auto">
             <table className="w-full">
               <thead className="bg-neutral-light">
                 <tr>
