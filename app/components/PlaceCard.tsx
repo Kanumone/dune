@@ -8,6 +8,11 @@ interface PlaceCardProps {
   onClose: () => void;
 }
 
+const isMobileDevice = () => {
+  if (typeof window === 'undefined') return false;
+  return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+};
+
 export default function PlaceCard({ location, onClose }: PlaceCardProps) {
   if (!location) return null;
 
@@ -22,8 +27,18 @@ export default function PlaceCard({ location, onClose }: PlaceCardProps) {
       // Continue opening maps even if tracking fails
     }
 
-    const url = `https://yandex.ru/maps/?rtext=~${location.coords[0]},${location.coords[1]}&rtt=pd`;
-    window.open(url, '_blank');
+    const lat = location.coords[0];
+    const lng = location.coords[1];
+
+    if (isMobileDevice()) {
+      // Try Yandex Maps deeplink
+      const yandexDeeplink = `yandexmaps://build_route_on_map?lat_to=${lat}&lon_to=${lng}`;
+      window.location.href = yandexDeeplink;
+    } else {
+      // Desktop: open web version directly
+      const url = `https://yandex.ru/maps/?rtext=~${lat},${lng}&rtt=pd`;
+      window.open(url, '_blank');
+    }
   };
 
   return (
