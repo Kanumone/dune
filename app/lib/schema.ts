@@ -10,6 +10,7 @@ export const locations = pgTable('locations', {
   categories: text('categories').array().notNull().default([]),
   popularity: varchar('popularity', { length: 20 }).notNull(),
   clicks: integer('clicks').notNull().default(0),
+  size: varchar('size', { length: 20 }).notNull().default('не указан'),
   canShow: boolean('can_show').notNull().default(false),
   createdAt: timestamp('created_at').defaultNow(),
 });

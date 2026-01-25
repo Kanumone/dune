@@ -13,6 +13,7 @@ export default function AddLocationForm({ isOpen, onClose, onSuccess }: AddLocat
     title: '',
     mapLink: '',
     description: '',
+    size: '',
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -124,8 +125,14 @@ export default function AddLocationForm({ isOpen, onClose, onSuccess }: AddLocat
     setError(null);
 
     // Validate required fields
-    if (!formData.title.trim() || !formData.mapLink.trim()) {
+    if (!formData.title.trim() || !formData.mapLink.trim() || !formData.size.trim()) {
       setError('Пожалуйста, заполните все обязательные поля');
+      return;
+    }
+
+    // Validate size length
+    if (formData.size.trim().length > 20) {
+      setError('Размер не должен превышать 20 символов');
       return;
     }
 
@@ -150,6 +157,7 @@ export default function AddLocationForm({ isOpen, onClose, onSuccess }: AddLocat
           lat: coords.lat,
           lng: coords.lng,
           description: formData.description.trim() || 'Описание скоро появится',
+          size: formData.size.trim(),
         }),
       });
 
@@ -163,6 +171,7 @@ export default function AddLocationForm({ isOpen, onClose, onSuccess }: AddLocat
         title: '',
         mapLink: '',
         description: '',
+        size: '',
       });
 
       onSuccess();
@@ -239,6 +248,32 @@ export default function AddLocationForm({ isOpen, onClose, onSuccess }: AddLocat
               placeholder="Вставьте ссылку из Яндекс или Google карт"
               required
             />
+          </div>
+
+          <div>
+            <label htmlFor="size" className="block text-sm font-medium text-winter-text mb-2">
+              Размер *
+            </label>
+            <input
+              type="text"
+              id="size"
+              name="size"
+              value={formData.size}
+              onChange={handleChange}
+              maxLength={20}
+              className="
+                w-full px-4 py-3 rounded-xl
+                bg-snow-white/50 border border-glass-border
+                text-winter-text placeholder-winter-text/40
+                focus:outline-none focus:ring-2 focus:ring-accent-warm/50
+                transition-all
+              "
+              placeholder="Например: 100 (м²) или огромный"
+              required
+            />
+            <p className="mt-1 text-xs text-winter-text/60">
+              Максимум 20 символов
+            </p>
           </div>
 
           <div>

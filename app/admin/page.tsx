@@ -261,6 +261,10 @@ export default function AdminPanel() {
                                 <span className="font-semibold text-neutral-dark">Клики:</span>{' '}
                                 <span className="text-neutral-dark">{location.clicks}</span>
                               </div>
+                              <div>
+                                <span className="font-semibold text-neutral-dark">Размер:</span>{' '}
+                                <span className="text-neutral-dark">{location.size}</span>
+                              </div>
                             </div>
                           </td>
                         </tr>

@@ -55,6 +55,7 @@ export default function PlaceCard({ location, onClose }: PlaceCardProps) {
       <div className="flex justify-between items-start gap-3">
         <div className="flex-1">
           <h2 className="text-2xl font-bold leading-tight text-winter-text">{location.title}</h2>
+          <p className="text-xs text-winter-text/50 mt-1">кликнуло {location.clicks} человек</p>
         </div>
         <div className="w-[100px] h-[120px] flex-shrink-0">
           <SnowdriftIllustration />
@@ -62,7 +63,7 @@ export default function PlaceCard({ location, onClose }: PlaceCardProps) {
       </div>
 
       <div className="text-4xl font-bold leading-none mb-3 text-accent-warm drop-shadow-sm">
-        {location.clicks} м²
+        {!isNaN(Number(location.size.trim())) ? `${location.size} м²` : location.size}
       </div>
 
       <p className="text-[15px] leading-relaxed text-text-secondary mb-3">

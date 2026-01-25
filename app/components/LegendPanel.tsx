@@ -71,7 +71,7 @@ export default function LegendPanel({ onLocationAdded, isOpen, onToggle }: Legen
             <span className="text-2xl">❄️</span>
             <span className="text-4xl">❄️</span>
           </div>
-          <p className="text-sm text-text-secondary m-0">Размер снежок — популярность</p>
+          <p className="text-sm text-text-secondary m-0">Размер снежок на карте — популярность</p>
         </div>
 
         <div className="flex items-center gap-3 mb-3">
@@ -81,7 +81,7 @@ export default function LegendPanel({ onLocationAdded, isOpen, onToggle }: Legen
 
         <div className="flex items-center gap-3 mb-3">
           <p className="text-l text-accent-warm font-bold">10 м²</p>
-          <p className="text-sm text-text-secondary m-0">Популярность сугроба</p>
+          <p className="text-sm text-text-secondary m-0">Размер сугроба</p>
         </div>
       </div>
 

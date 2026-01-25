@@ -29,6 +29,7 @@ export async function GET() {
       categories: row.categories as Location['categories'],
       popularity: row.popularity as Location['popularity'],
       clicks: row.clicks,
+      size: row.size,
       canShow: row.canShow,
     }));
 

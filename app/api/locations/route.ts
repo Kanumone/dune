@@ -17,6 +17,7 @@ export async function GET() {
       categories: row.categories as Location['categories'],
       popularity: row.popularity as Location['popularity'],
       clicks: row.clicks,
+      size: row.size,
       canShow: row.canShow,
     }));
 
@@ -33,12 +34,28 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { title, lat, lng, description } = body;
+    const { title, lat, lng, description, size } = body;
 
     // Validate required fields
     if (!title || !lat || !lng) {
       return NextResponse.json(
         { error: 'Missing required fields: title, lat, lng' },
+        { status: 400 }
+      );
+    }
+
+    // Validate size field
+    if (!size || typeof size !== 'string' || size.trim().length === 0) {
+      return NextResponse.json(
+        { error: 'Пожалуйста, укажите размер' },
+        { status: 400 }
+      );
+    }
+
+    // Validate size length
+    if (size.trim().length > 20) {
+      return NextResponse.json(
+        { error: 'Размер не должен превышать 20 символов' },
         { status: 400 }
       );
     }
@@ -64,6 +81,7 @@ export async function POST(request: Request) {
       lng: lng.toString(),
       title,
       description: description || 'Там явно что-то интересное',
+      size: size.trim(),
       badges: [],
       categories: [],
       popularity: 'small',
@@ -76,6 +94,7 @@ export async function POST(request: Request) {
       coords: [parseFloat(result[0].lat), parseFloat(result[0].lng)],
       title: result[0].title,
       description: result[0].description,
+      size: result[0].size,
       badges: result[0].badges,
       categories: result[0].categories as Location['categories'],
       popularity: result[0].popularity as Location['popularity'],

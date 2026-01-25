@@ -1,0 +1,1 @@
+ALTER TABLE "locations" ADD COLUMN "size" varchar(20) DEFAULT 'не указан' NOT NULL;
