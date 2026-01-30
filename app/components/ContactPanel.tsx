@@ -9,19 +9,6 @@ export default function ContactPanel({ isOpen, onToggle }: ContactPanelProps) {
 
   return (
     <>
-      {/* Contact button */}
-      <button
-        onClick={onToggle}
-        className="
-          fixed right-6 bottom-6 z-[900] w-12 h-12 flex items-center justify-center
-          frosted-glass rounded-full cursor-pointer transition-all duration-300 ease-out
-          text-winter-text text-xl font-bold hover:scale-110 hover:shadow-lg
-        "
-        aria-label="Контакты разработчиков"
-      >
-        !
-      </button>
-
       {/* Contact panel */}
       <div
         className={`

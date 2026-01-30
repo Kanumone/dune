@@ -1,16 +1,16 @@
 'use client';
 
-import { useState } from 'react';
 import AddLocationForm from './AddLocationForm';
 
 interface LegendPanelProps {
   onLocationAdded?: () => void;
   isOpen: boolean;
   onToggle: () => void;
+  isFormOpen: boolean;
+  onToggleForm: () => void;
 }
 
-export default function LegendPanel({ onLocationAdded, isOpen, onToggle }: LegendPanelProps) {
-  const [isFormOpen, setIsFormOpen] = useState(false);
+export default function LegendPanel({ onLocationAdded, isOpen, onToggle, isFormOpen, onToggleForm }: LegendPanelProps) {
 
   const handleLocationAdded = () => {
     if (onLocationAdded) {
@@ -20,32 +20,6 @@ export default function LegendPanel({ onLocationAdded, isOpen, onToggle }: Legen
 
   return (
     <>
-      {/* Add button */}
-      <button
-        onClick={() => setIsFormOpen(true)}
-        className="
-          fixed right-6 bottom-[152px] z-[900] w-12 h-12 flex items-center justify-center
-          frosted-glass rounded-full cursor-pointer transition-all duration-300 ease-out
-          text-winter-text text-2xl font-bold hover:scale-110 hover:shadow-lg
-        "
-        aria-label="Добавить сугроб"
-      >
-        +
-      </button>
-
-      {/* Help button */}
-      <button
-        onClick={onToggle}
-        className="
-          fixed right-6 bottom-[88px] z-[900] w-12 h-12 flex items-center justify-center
-          frosted-glass rounded-full cursor-pointer transition-all duration-300 ease-out
-          text-winter-text text-xl font-bold hover:scale-110 hover:shadow-lg
-        "
-        aria-label="Как читать карту"
-      >
-        ?
-      </button>
-
       {/* Legend panel */}
       <div
         className={`
@@ -88,7 +62,7 @@ export default function LegendPanel({ onLocationAdded, isOpen, onToggle }: Legen
       {/* Add location form modal */}
       <AddLocationForm
         isOpen={isFormOpen}
-        onClose={() => setIsFormOpen(false)}
+        onClose={onToggleForm}
         onSuccess={handleLocationAdded}
       />
     </>

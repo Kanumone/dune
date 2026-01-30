@@ -47,7 +47,7 @@ export default function PlaceCard({ location, onClose }: PlaceCardProps) {
         fixed right-6 top-1/2 z-[900] w-[380px] max-h-[85vh] overflow-y-auto p-8
         place-card-glass rounded-3xl transition-all duration-500 ease-out custom-scrollbar
         ${location ? '-translate-y-1/2 translate-x-0 opacity-100' : '-translate-y-1/2 translate-x-[120%] opacity-0'}
-        max-md:left-4 max-md:right-4 max-md:top-auto max-md:bottom-0 max-md:w-auto max-md:max-h-[70vh]
+        max-md:left-4 max-md:right-4 max-md:top-auto max-md:bottom-20 max-md:w-auto max-md:max-h-[70vh]
         max-md:rounded-t-3xl max-md:rounded-b-none
         ${location ? 'max-md:translate-y-0' : 'max-md:translate-y-full'}
       `}

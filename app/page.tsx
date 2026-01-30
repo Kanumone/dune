@@ -7,6 +7,8 @@ import LegendPanel from '@/app/components/LegendPanel';
 import ContactPanel from '@/app/components/ContactPanel';
 import PlaceCard from '@/app/components/PlaceCard';
 import YandexMap from '@/app/components/YandexMap';
+import BottomBar from '@/app/components/BottomBar';
+import AddSnowdriftButton from '@/app/components/AddSnowdriftButton';
 
 export default function Home() {
   const [locations, setLocations] = useState<Location[]>([]);
@@ -15,6 +17,7 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [isLegendOpen, setIsLegendOpen] = useState(false);
   const [isContactOpen, setIsContactOpen] = useState(false);
+  const [isFormOpen, setIsFormOpen] = useState(false);
 
   const fetchLocations = async () => {
     try {
@@ -64,6 +67,14 @@ export default function Home() {
     setIsContactOpen(!isContactOpen);
   };
 
+  const handleToggleForm = () => {
+    setIsFormOpen(!isFormOpen);
+    if (!isFormOpen) {
+      setIsLegendOpen(false);
+      setIsContactOpen(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[10000]">
@@ -87,12 +98,22 @@ export default function Home() {
         onLocationAdded={fetchLocations}
         isOpen={isLegendOpen}
         onToggle={handleToggleLegend}
+        isFormOpen={isFormOpen}
+        onToggleForm={handleToggleForm}
       />
       <ContactPanel
         isOpen={isContactOpen}
         onToggle={handleToggleContact}
       />
       <PlaceCard location={selectedLocation} onClose={handleClosePlaceCard} />
+      <AddSnowdriftButton
+        onClick={handleToggleForm}
+        isHidden={selectedLocation !== null || isLegendOpen || isContactOpen}
+      />
+      <BottomBar
+        onOpenLegend={handleToggleLegend}
+        onOpenContact={handleToggleContact}
+      />
     </>
   );
 }
